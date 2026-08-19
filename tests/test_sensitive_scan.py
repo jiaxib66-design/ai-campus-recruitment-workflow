@@ -25,6 +25,22 @@ class SensitiveScanTests(unittest.TestCase):
             findings = check_sensitive.scan(path)
             self.assertEqual(len(findings), 2)
 
+    def test_rejects_runtime_data_inside_skill(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            skill = root / "skills" / "demo-skill"
+            (skill / "private").mkdir(parents=True)
+            (skill / "SKILL.md").write_text("---\nname: demo-skill\n---\n", encoding="utf-8")
+            (skill / "private" / "profile.json").write_text("{}\n", encoding="utf-8")
+            (skill / "resume.md").write_text("test runtime resume\n", encoding="utf-8")
+            (skill / "assets").mkdir()
+            (skill / "assets" / "user-profile.example.json").write_text("{}\n", encoding="utf-8")
+
+            findings = check_sensitive.scan(root)
+
+            self.assertEqual(len(findings), 2)
+            self.assertTrue(all("inside Skill" in finding for finding in findings))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -199,6 +199,21 @@ python .\scripts\check_sensitive.py --path .
 
 仓库维护者还应使用本机 Skill Creator 提供的 `quick_validate.py` 校验 `skills/ai-campus-recruitment-workflow`。普通使用者无需安装 Skill Creator，也不需要执行该维护命令。
 
+## 版本与更新流程
+
+当前版本见 [`VERSION`](VERSION)，各版本变化见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+工作流按 `v0.1`、`v0.2`、`v0.3` 依次迭代。每次更新遵循以下顺序：
+
+1. 根据真实测试结果说明发现的问题、拟议改动、涉及文件和预期影响。
+2. 得到用户对该项工作流改动的明确确认。
+3. 实施改动，但不把用户测试数据写入 Skill、示例、配置、测试或文档。
+4. 运行自动测试、敏感信息扫描和 Skill 结构校验。
+5. 更新 `VERSION` 与 `CHANGELOG.md`，再同步本机安装版。
+6. 只有在用户明确要求发布时，才提交、创建对应 Git 标签并推送。
+
+不兼容的重大变更进入 `v1.0`；在此之前，单次已确认的功能或流程迭代递增次版本号。
+
 ## 限制
 
 - 招聘官网结构变化快，核验需要当次访问官方页面；离线脚本不抓取网站。
