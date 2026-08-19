@@ -1,0 +1,14 @@
+{
+  "messages": [
+    {
+      "message_id": "fictional-assessment-001",
+      "subject": "【星河科技（虚构）】在线测评通知",
+      "body": "请在2026年9月3日 18:00 北京时间前完成虚构在线测评。本邮件仅用于测试。"
+    },
+    {
+      "message_id": "fictional-interview-002",
+      "subject": "【云杉咨询（虚构）】面试安排",
+      "body": "虚构面试时间：2026-09-08 14:30 UTC+8，请确认后再写入日历。"
+    }
+  ]
+}

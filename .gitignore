@@ -1,0 +1,30 @@
+# Private user data and credentials
+private/
+.env
+.env.*
+!.env.example
+*.local.json
+*.secrets.json
+user-profile.json
+applications.csv
+mail-export*
+
+# Generated output
+output/
+dist/
+build/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.venv/
+venv/
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

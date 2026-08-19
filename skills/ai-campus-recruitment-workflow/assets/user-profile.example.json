@@ -1,0 +1,25 @@
+{
+  "profile_name": "林晓舟（虚构）",
+  "education": {
+    "degree": "master",
+    "graduation_date": "2027-06",
+    "majors": ["信息管理", "数据科学"]
+  },
+  "skills": ["Python", "SQL", "产品分析"],
+  "languages": {"English": "CET-6"},
+  "locations": ["上海", "杭州", "深圳"],
+  "interests": ["数据产品", "商业分析", "AI应用"],
+  "hard_constraints": {
+    "work_authorization": "CN",
+    "excluded_locations": [],
+    "must_have": [],
+    "max_travel_percent": 30
+  },
+  "weights": {
+    "resume_fit": 0.35,
+    "competition": 0.15,
+    "interest": 0.2,
+    "development": 0.15,
+    "location": 0.15
+  }
+}

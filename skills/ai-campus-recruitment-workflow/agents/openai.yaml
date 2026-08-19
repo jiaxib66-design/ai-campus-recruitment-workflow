@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI 秋招投递工作流"
+  short_description: "核验秋招岗位、智能评分、优化申请材料并安全追踪投递全流程"
+  default_prompt: "Use $ai-campus-recruitment-workflow to verify a campus role, score its fit, and update my private application tracker."
