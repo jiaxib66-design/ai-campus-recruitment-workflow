@@ -19,7 +19,7 @@
 需要 Python 3.10+，运行脚本不依赖第三方包。
 
 ```powershell
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/ai-campus-recruitment-workflow.git
+git clone https://github.com/jiaxib66-design/ai-campus-recruitment-workflow.git
 Copy-Item -Recurse .\ai-campus-recruitment-workflow\skills\ai-campus-recruitment-workflow "$env:CODEX_HOME\skills\ai-campus-recruitment-workflow"
 ```
 
