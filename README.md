@@ -4,6 +4,21 @@
 
 > 本项目不代替个人判断，不承诺录用。竞争程度和“相对保底”只是在信息不完全情况下的辅助比较。
 
+## 当前完成度
+
+这个仓库已经可以被其他 Codex 用户安装，并通过自然语言运行完整的辅助流程；它不是无人值守的自动投递机器人。
+
+| 阶段 | 当前状态 | 说明 |
+| --- | --- | --- |
+| Skill 安装与自然语言触发 | 已验证 | 支持完整流程，也可只运行线索、评分、材料或追踪阶段 |
+| 私有配置初始化 | 已验证 | 从虚构模板生成，默认不覆盖已有文件 |
+| 线索导入、岗位评分、名额排序 | 已验证 | 标准库脚本，可重复运行 |
+| 本地投递追踪 | 已验证 | 支持初始化、新增、更新、筛选和近期事项 |
+| 招聘邮件期限提取 | mock 已验证 | 提供 163 IMAP 只读接口，但未宣称完成真实邮箱联调 |
+| 官网招聘信息核验 | 由 Codex 联网执行 | 第三方内容只作线索，关键事实以当次官网信息为准 |
+| 登录、验证码、最终投递 | 人工执行 | 不绕过网站规则，不自动点击最终提交 |
+| 日历写入 | 确认后使用外部日历能力 | 本仓库只生成待确认事项，不自动写入日历 |
+
 ## 功能
 
 - 从公司名、文字、CSV/JSON、截图转写或链接开始整理线索；第三方内容仅作为线索。
@@ -16,14 +31,42 @@
 
 ## 安装
 
-需要 Python 3.10+，运行脚本不依赖第三方包。
+### 使用前准备
+
+- 支持 Skills 的 Codex；
+- Git；
+- Python 3.10+。运行脚本不依赖第三方包。
+
+[OpenAI 的 Codex 使用案例](https://developers.openai.com/codex/use-cases)将 Skill 描述为 Codex 可保留并重复使用的工作流。本项目把 Skill 文件与可独立执行的脚本同时放在仓库中，因此建议保留克隆后的仓库，不要只下载单个 `SKILL.md`。
+
+### Windows PowerShell
 
 ```powershell
 git clone https://github.com/jiaxib66-design/ai-campus-recruitment-workflow.git
-Copy-Item -Recurse .\ai-campus-recruitment-workflow\skills\ai-campus-recruitment-workflow "$env:CODEX_HOME\skills\ai-campus-recruitment-workflow"
+Set-Location .\ai-campus-recruitment-workflow
+
+$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
+$skillTarget = Join-Path $codexHome "skills\ai-campus-recruitment-workflow"
+New-Item -ItemType Directory -Force $skillTarget | Out-Null
+Copy-Item -Recurse -Force .\skills\ai-campus-recruitment-workflow\* $skillTarget
+Test-Path (Join-Path $skillTarget "SKILL.md")
 ```
 
-如果未设置 `CODEX_HOME`，请复制到 Codex 使用的个人 skills 目录。重启或刷新 Codex 后，可以自然语言触发：
+最后一条命令应输出 `True`。
+
+### macOS / Linux
+
+```bash
+git clone https://github.com/jiaxib66-design/ai-campus-recruitment-workflow.git
+cd ai-campus-recruitment-workflow
+
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+mkdir -p "$CODEX_HOME/skills/ai-campus-recruitment-workflow"
+cp -R skills/ai-campus-recruitment-workflow/. "$CODEX_HOME/skills/ai-campus-recruitment-workflow/"
+test -f "$CODEX_HOME/skills/ai-campus-recruitment-workflow/SKILL.md" && echo "Skill installed"
+```
+
+重启或刷新 Codex 后，可以自然语言触发：
 
 - “用 AI 秋招投递工作流核验这家公司今年校招官网和截止日期。”
 - “根据我的私有配置给这些岗位排序，只有两个投递名额。”
@@ -31,6 +74,48 @@ Copy-Item -Recurse .\ai-campus-recruitment-workflow\skills\ai-campus-recruitment
 - “只用 mock 邮件提取测评截止时间，不要写日历。”
 
 Skill 本体位于 [`skills/ai-campus-recruitment-workflow`](skills/ai-campus-recruitment-workflow)。
+
+## 五分钟首次运行
+
+### 1. 验证仓库
+
+在仓库根目录执行：
+
+```powershell
+python -m unittest discover -s tests -v
+python .\scripts\check_sensitive.py --path .
+```
+
+应看到 6 项测试通过和敏感信息扫描通过。macOS/Linux 可将路径分隔符改为 `/`，如系统使用 `python3`，请把命令中的 `python` 替换为 `python3`。
+
+### 2. 创建自己的私有配置
+
+```powershell
+python .\skills\ai-campus-recruitment-workflow\scripts\init_user_config.py --output .\private\user-profile.json
+```
+
+只在本地编辑 `private/user-profile.json`。不要提交真实简历、联系方式、邮箱授权码或投递记录。
+
+### 3. 先用虚构岗位跑一次评分
+
+```powershell
+python .\skills\ai-campus-recruitment-workflow\scripts\score_roles.py `
+  --profile .\config\user-profile.example.json `
+  --roles .\examples\roles.example.json `
+  --output .\output\ranked.json
+```
+
+打开 `output/ranked.json`，应看到虚构岗位的硬门槛结果、综合分、分类、共享名额选择理由和“不承诺录用”声明。
+
+### 4. 在 Codex 中开始真实流程
+
+可以直接说：
+
+```text
+使用 $ai-campus-recruitment-workflow。读取我指定的私有配置，先核验下面这家公司今年的校招官网、截止日期和投递次数，再给岗位排序。任何登录、验证码和最终投递都停下来让我确认。
+```
+
+随后提供公司名、截图或链接线索，并明确私有配置文件的位置。也可以只说“只更新投递追踪”或“只检查这份 JD 与简历的匹配点”。
 
 ## 私有配置
 
@@ -110,8 +195,9 @@ python .\skills\ai-campus-recruitment-workflow\scripts\email_imap.py fetch --out
 ```powershell
 python -m unittest discover -s tests -v
 python .\scripts\check_sensitive.py --path .
-python <SKILL_CREATOR_DIR>\scripts\quick_validate.py .\skills\ai-campus-recruitment-workflow
 ```
+
+仓库维护者还应使用本机 Skill Creator 提供的 `quick_validate.py` 校验 `skills/ai-campus-recruitment-workflow`。普通使用者无需安装 Skill Creator，也不需要执行该维护命令。
 
 ## 限制
 
