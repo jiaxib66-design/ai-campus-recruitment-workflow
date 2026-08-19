@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_SCRIPTS = ROOT / "skills" / "ai-campus-recruitment-workflow" / "scripts"
+GUIDED_WORKFLOW = ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "guided-workflow.md"
 
 
 def load_module(name: str, path: Path):
@@ -103,6 +104,24 @@ class CliTests(unittest.TestCase):
             )
             self.assertIn("no calendar write", result.stdout)
             self.assertFalse(json.loads(todos.read_text(encoding="utf-8"))["calendar_write_performed"])
+
+
+class GuidedWorkflowContractTests(unittest.TestCase):
+    def test_onboarding_and_target_discovery_routes_exist(self):
+        guide = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        required_contracts = (
+            "First-time user",
+            "Returning user",
+            "Named companies",
+            "Direction or region",
+            "Unclear target",
+            "Run mode",
+            "Improvement mode",
+            "voice input",
+        )
+        for contract in required_contracts:
+            with self.subTest(contract=contract):
+                self.assertIn(contract, guide)
 
 
 if __name__ == "__main__":

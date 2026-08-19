@@ -1,6 +1,6 @@
 ---
 name: ai-campus-recruitment-workflow
-description: Manage a privacy-first AI-assisted campus recruitment workflow in Chinese or English. Use when Codex needs to turn company names, screenshots, recruiting posts, or links into verified official campus roles; check hard requirements; score and prioritize roles; explain limited application-slot choices; review resume-to-JD evidence; draft open questions; maintain a local application tracker; or optionally extract recruiting deadlines from IMAP email for user-confirmed calendar actions. Also use for natural-language requests about 秋招、校招、岗位匹配、投递排序、简历匹配、网申开放题、投递追踪、测评、笔试或面试提醒.
+description: Manage a privacy-first, adaptive AI-assisted campus recruitment workflow in Chinese or English. Use when Codex needs to onboard a first-time or returning 秋招/校招 user from a resume or existing profile; discover target companies from named employers, a role or industry direction, or a preferred region; verify official campus roles; check hard requirements; score and prioritize roles; explain limited application-slot choices; review resume-to-JD evidence; draft open questions; maintain a local application tracker; or extract reviewable recruiting deadlines. Also use for natural-language requests about 岗位匹配、投递排序、简历匹配、网申开放题、投递追踪、测评、笔试或面试提醒.
 ---
 
 # AI Campus Recruitment Workflow
@@ -10,10 +10,23 @@ Run a privacy-first, evidence-backed campus recruitment workflow. Keep the user 
 ## Start safely
 
 1. Locate the user's private workspace. Never commit private profile, resume, tracker, mailbox data, credentials, or generated application content.
-2. If no private configuration exists, run `scripts/init_user_config.py --output <private-path>` and ask the user to edit the generated file locally.
-3. Treat social posts, screenshots, aggregators, and chat messages as leads only. Prefer the employer's official recruiting site for all material facts.
-4. Record source URLs, retrieval dates, and uncertainty. Do not invent a deadline, quota, eligibility rule, or JD detail.
-5. Read `references/privacy-and-safety.md` before handling personal data or external accounts.
+2. Ask once whether runtime information should remain conversation-only or may be stored in a user-selected private path. Initialize a private configuration only when the user chooses persistence.
+3. Store user-provided test or real data only in the user-selected private workspace. Store disposable generated results only in an ignored output path. Never copy runtime data into this Skill, `examples/`, `config/`, `tests/`, or documentation.
+4. Treat social posts, screenshots, aggregators, and chat messages as leads only. Prefer the employer's official recruiting site for all material facts.
+5. Record source URLs, retrieval dates, and uncertainty. Do not invent a deadline, quota, eligibility rule, or JD detail.
+6. Read `references/privacy-and-safety.md` before handling personal data or external accounts.
+
+## Guide every run
+
+Read `references/guided-workflow.md` for full-loop runs, user tests, first-time users, or whenever the user asks what to do next.
+
+- Default to **run mode**: perform the recruitment workflow naturally without discussing Skill files, versions, or testing mechanics.
+- Distinguish first-time users from returning users before collecting profile information. Prefer a resume for first-time onboarding; reuse a user-confirmed accessible profile for returning users and ask only what changed.
+- After reading a resume, form tentative direction hypotheses and ask one or two adaptive follow-up rounds. Do not replace the conversation with a fixed questionnaire or decide preferences for the user.
+- Route target discovery by what the user knows: named companies, a role/industry/region direction, or no clear target. Search for companies when the user provides constraints but no names.
+- Guide one useful next action at a time. Use explicit stage labels only when they improve clarity; avoid repeating privacy or process boilerplate after the boundary is settled.
+- Pause at every human checkpoint. Missing evidence remains unresolved; it is not permission to proceed by assumption.
+- Enter **improvement mode** only when the user explicitly asks to record a workflow problem, change the Skill, or publish a new version. Obtain approval for the specific change before editing, then return to the interrupted recruitment step.
 
 ## Route the request
 
@@ -73,4 +86,4 @@ python scripts/tracker.py update --file private/applications.csv --id APP-0001 -
 
 ## Finish each run
 
-Separate verified facts from assumptions, list unresolved questions, show upcoming deadlines, and state the next manual action. Keep sensitive artifacts private and check repository status before committing.
+Separate verified facts from assumptions, list unresolved questions, show upcoming deadlines, and state one concrete next manual action. Keep sensitive artifacts private and check repository status before committing.
