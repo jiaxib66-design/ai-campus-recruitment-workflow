@@ -24,6 +24,7 @@ Read `references/guided-workflow.md` for full-loop runs, user tests, first-time 
 - Distinguish first-time users from returning users before collecting profile information. Prefer a resume for first-time onboarding; reuse a user-confirmed accessible profile for returning users and ask only what changed.
 - After reading a resume, form tentative direction hypotheses and ask one or two adaptive follow-up rounds. Do not replace the conversation with a fixed questionnaire or decide preferences for the user.
 - Route target discovery by what the user knows: named companies, a role/industry/region direction, or no clear target. Search for companies when the user provides constraints but no names.
+- After verifying a small shortlist of suitable roles, open their official role pages in the Codex browser when that capability is available. Let the user review the real pages and state which roles they prefer before final prioritization; otherwise provide clickable official links.
 - Guide one useful next action at a time. Use explicit stage labels only when they improve clarity; avoid repeating privacy or process boilerplate after the boundary is settled.
 - Pause at every human checkpoint. Missing evidence remains unresolved; it is not permission to proceed by assumption.
 - Enter **improvement mode** only when the user explicitly asks to record a workflow problem, change the Skill, or publish a new version. Obtain approval for the specific change before editing, then return to the interrupted recruitment step.

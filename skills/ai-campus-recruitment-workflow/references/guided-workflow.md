@@ -72,11 +72,17 @@ Completion: named company leads or a user-approved company-search brief is ready
 
 Find the employer's official recruiting source and verify the cycle, eligibility, graduation window, deadline and timezone, quota, location, and full JD. Separate verified, conflicting, and unresolved facts. Ask the user to resolve any fact available only after login.
 
-Completion: material facts have official evidence or remain explicitly unresolved.
+After filtering out hard conflicts and weak or unverified leads, form the smallest useful shortlist of suitable roles, usually two to five. When the current Codex interface can open browser tabs, automatically open each shortlisted role's official employer page for the user. Do not substitute a search result, aggregator, social post, or inferred URL for the official role page.
+
+If browser opening is unavailable or fails, provide clearly labeled clickable official links instead. Avoid flooding the user with every discovered role, reopening pages already visible, or opening login and submission pages prematurely.
+
+Ask the user to review the real role pages and say which role or roles they prefer and what attracts them. Treat this stated preference as new scoring evidence; do not finalize the application order solely from resume fit before the user has had this review opportunity.
+
+Completion: material facts have official evidence or remain explicitly unresolved, the suitable official role pages have been opened or linked, and the user has been invited to express a preference.
 
 ### 4. Check gates and prioritize
 
-Compare verified requirements with the private profile, show hard conflicts and unknowns, then score eligible roles. Explain category labels and any shared-quota displacement. Ask the user whether the priorities reflect their real preferences.
+Compare verified requirements with the private profile and the user's reaction after reviewing the official pages, show hard conflicts and unknowns, then score eligible roles. Explain category labels and any shared-quota displacement. Ask the user whether the priorities reflect their real preferences.
 
 Completion: the user accepts the ranking or supplies corrections for a rerun.
 

@@ -123,6 +123,17 @@ class GuidedWorkflowContractTests(unittest.TestCase):
             with self.subTest(contract=contract):
                 self.assertIn(contract, guide)
 
+    def test_shortlisted_official_pages_are_opened_before_final_ranking(self):
+        guide = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        verification_stage = guide.split("### 3. Verify official facts", 1)[1].split(
+            "### 4. Check gates and prioritize", 1
+        )[0]
+        self.assertIn("automatically open", verification_stage)
+        self.assertIn("official employer page", verification_stage)
+        self.assertIn("clickable official links", verification_stage)
+        self.assertIn("which role or roles they prefer", verification_stage)
+        self.assertIn("do not finalize", verification_stage)
+
 
 if __name__ == "__main__":
     unittest.main()
