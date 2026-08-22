@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL_SCRIPTS = ROOT / "skills" / "ai-campus-recruitment-workflow" / "scripts"
 GUIDED_WORKFLOW = ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "guided-workflow.md"
 PRIVACY_GUIDE = ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "privacy-and-safety.md"
+APPLICATION_FORM_GUIDE = (
+    ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "application-form-filling.md"
+)
 
 
 def load_module(name: str, path: Path):
@@ -149,6 +152,24 @@ class GuidedWorkflowContractTests(unittest.TestCase):
         for checkpoint in ("login", "CAPTCHA", "legal attestations", "consent", "final submit"):
             with self.subTest(checkpoint=checkpoint):
                 self.assertIn(checkpoint, privacy)
+
+    def test_resume_upload_parse_reconcile_and_review_contract(self):
+        guide = APPLICATION_FORM_GUIDE.read_text(encoding="utf-8")
+        guided_workflow = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        required_contracts = (
+            "Prefer upload-and-parse",
+            "ask the user to perform only that smallest action",
+            "do not copy, convert, or temporarily save the resume",
+            "Compare parsed fields with explicit user-confirmed resume evidence",
+            "fields Codex corrected or polished",
+            "Ask whether the current form is accurate",
+            "must not click the final submission control",
+        )
+        for contract in required_contracts:
+            with self.subTest(contract=contract):
+                self.assertIn(contract, guide)
+        self.assertIn("read `application-form-filling.md`", guided_workflow)
+        self.assertIn("check for resume upload and automatic parsing", guided_workflow)
 
 
 if __name__ == "__main__":

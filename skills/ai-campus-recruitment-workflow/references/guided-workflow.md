@@ -96,7 +96,11 @@ Completion: the user accepts the ranking or supplies corrections for a rerun.
 
 ### 5. Assist application materials
 
-Map JD requirements to explicit resume evidence and help draft truthful wording or open-question answers. Mark every placeholder and claim that needs verification. When the user has authorized a specific application and completed login, inspect the real form and populate supported reversible fields with confirmed facts instead of asking the user to copy them manually. Continue through ordinary non-submitting navigation as needed, pausing for unknown facts and human checkpoints. Provide a final review checklist.
+Map JD requirements to explicit resume evidence and help draft truthful wording or open-question answers. Mark every placeholder and claim that needs verification. When the user has authorized a specific application and completed login, read `application-form-filling.md`, inspect the real form, and check for resume upload and automatic parsing before beginning manual entry.
+
+Prefer the employer's upload-and-parse path when available. If Codex cannot choose a local file because of a file picker or permission boundary, ask the user to select only the original resume, then immediately resume control. Do not create a workspace copy to bypass that boundary when runtime data is conversation-only. After parsing, reconcile every populated field against confirmed evidence, correct truthful errors or wording, and show what was kept, changed, and remains unresolved. Ask the user whether the populated form is accurate; if not, collect and apply only the necessary corrections.
+
+Continue through ordinary non-submitting navigation as needed, pausing for unknown facts and human checkpoints. Provide a final review checklist.
 
 Completion: the user confirms the materials and populated fields are factually accurate and ready for final review.
 

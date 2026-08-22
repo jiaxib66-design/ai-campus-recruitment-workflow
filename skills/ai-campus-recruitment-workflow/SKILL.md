@@ -62,10 +62,12 @@ Read `references/scoring.md` when changing weights, thresholds, or competition e
 
 ## Assist the application
 
+Read `references/application-form-filling.md` before working with resume upload, automatic resume parsing, or a live employer application form.
+
 1. Compare each JD requirement with explicit resume evidence. Separate `strong evidence`, `partial evidence`, `gap`, and `needs user confirmation`.
 2. Suggest truthful resume wording. Never fabricate skills, dates, metrics, employers, projects, awards, or credentials.
 3. Draft open-question answers from verified facts and the JD. Highlight placeholders and claims requiring user verification.
-4. Reuse repeated fields only from the user's private configuration. After the user authorizes work on a specific application and completes any required login, use available browser tools to inspect and populate reversible form fields from confirmed facts. Navigate ordinary non-submitting steps when needed to expose later fields.
+4. Reuse repeated fields only from the user's private configuration. After the user authorizes work on a specific application and completes any required login, inspect the form for resume upload and automatic parsing before manual entry. Use available browser tools to populate reversible fields from confirmed facts and navigate ordinary non-submitting steps when needed to expose later fields.
 5. If a browser action fails, attempt the safe available alternatives before asking the user. Never claim success without observing it; report the exact failed action and request only the minimum manual handoff.
 6. Show a final review checklist before submission. Browser login, CAPTCHA, legal attestations, consent, and final submit remain manual.
 

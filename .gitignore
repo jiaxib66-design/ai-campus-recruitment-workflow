@@ -11,6 +11,7 @@ mail-export*
 
 # Generated output
 output/
+.playwright-mcp/
 dist/
 build/
 *.log
