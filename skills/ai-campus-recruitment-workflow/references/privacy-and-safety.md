@@ -11,6 +11,8 @@
 
 Require the user to perform or explicitly confirm browser login, CAPTCHA, final application submission, mailbox connection, and every calendar write. Require truthfulness review for resume edits and open-question claims.
 
+Once the user explicitly authorizes work on a specific application, reversible browser navigation and form entry using confirmed facts are in scope. Use available tools for those steps instead of shifting them back to the user. Never fill missing facts by inference, select legal attestations or consent, enter credentials, solve a CAPTCHA, or click final submit.
+
 ## Evidence discipline
 
 - Prefer official employer recruiting pages for deadlines, quotas, eligibility, and JD text.

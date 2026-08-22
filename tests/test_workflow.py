@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_SCRIPTS = ROOT / "skills" / "ai-campus-recruitment-workflow" / "scripts"
 GUIDED_WORKFLOW = ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "guided-workflow.md"
+PRIVACY_GUIDE = ROOT / "skills" / "ai-campus-recruitment-workflow" / "references" / "privacy-and-safety.md"
 
 
 def load_module(name: str, path: Path):
@@ -133,6 +134,21 @@ class GuidedWorkflowContractTests(unittest.TestCase):
         self.assertIn("clickable official links", verification_stage)
         self.assertIn("which role or roles they prefer", verification_stage)
         self.assertIn("do not finalize", verification_stage)
+
+    def test_supported_reversible_actions_precede_manual_handoff(self):
+        guide = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        privacy = PRIVACY_GUIDE.read_text(encoding="utf-8")
+        active_execution = guide.split("### Active execution principle", 1)[1].split(
+            "### Improvement mode", 1
+        )[0]
+        self.assertIn("perform every safe and reversible step", active_execution)
+        self.assertIn("Attempt a supported action before requesting manual help", active_execution)
+        self.assertIn("smallest step required", active_execution)
+        self.assertIn("Never imply", active_execution)
+        self.assertIn("reversible browser navigation and form entry", privacy)
+        for checkpoint in ("login", "CAPTCHA", "legal attestations", "consent", "final submit"):
+            with self.subTest(checkpoint=checkpoint):
+                self.assertIn(checkpoint, privacy)
 
 
 if __name__ == "__main__":

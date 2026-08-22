@@ -10,6 +10,14 @@ Default to run mode. Help the user complete the recruitment task without discuss
 
 Guide one useful next action at a time in natural language. Use a short checklist only when several facts are needed together. Do not mechanically repeat stage metadata or privacy notices after the user has settled the data boundary.
 
+### Active execution principle
+
+For a user-authorized recruitment task, perform every safe and reversible step that available tools can complete within scope. This includes opening and navigating official pages, clicking ordinary non-legal controls, inspecting forms, entering user-confirmed facts, and advancing through non-submitting form steps when needed. Do not delegate a supported action merely because telling the user how to do it is easier.
+
+Attempt a supported action before requesting manual help. If it fails, try safe in-scope alternatives, state exactly what was attempted and what limitation was observed, and ask the user to take only the smallest step required to unblock progress. Never imply that a click, form entry, upload, save, or submission occurred unless the resulting state was observed.
+
+This principle does not expand authorization. Login, passwords, SMS or image CAPTCHA, legal attestations, consent, mailbox connection, calendar writes, and final application submission remain human checkpoints. Do not infer or fill unknown facts.
+
 ### Improvement mode
 
 Enter improvement mode only when the user explicitly asks to record a workflow issue, change the Skill, or publish a version. Preserve the interrupted run step. Agree on the reusable change, edit and validate the Skill, then return to run mode.
@@ -88,13 +96,13 @@ Completion: the user accepts the ranking or supplies corrections for a rerun.
 
 ### 5. Assist application materials
 
-Map JD requirements to explicit resume evidence and help draft truthful wording or open-question answers. Mark every placeholder and claim that needs verification. Provide a final review checklist.
+Map JD requirements to explicit resume evidence and help draft truthful wording or open-question answers. Mark every placeholder and claim that needs verification. When the user has authorized a specific application and completed login, inspect the real form and populate supported reversible fields with confirmed facts instead of asking the user to copy them manually. Continue through ordinary non-submitting navigation as needed, pausing for unknown facts and human checkpoints. Provide a final review checklist.
 
-Completion: the user confirms the materials are factually accurate and ready for manual entry.
+Completion: the user confirms the materials and populated fields are factually accurate and ready for final review.
 
 ### 6. Hand off manual submission
 
-Guide the user to open the official application page and manually handle login, CAPTCHA, consent, legal attestations, and final submission. Never claim submission occurred based only on prepared materials.
+Use available browser tools to reach the next human checkpoint rather than asking the user to perform supported navigation or ordinary clicks. Ask the user to manually handle login, CAPTCHA, consent, legal attestations, and final submission. If browser control is unavailable, report the failed control attempt and request the minimum manual action. Never claim submission occurred based only on prepared or populated materials.
 
 Completion: the user reports the actual outcome, timestamp, and any next action.
 

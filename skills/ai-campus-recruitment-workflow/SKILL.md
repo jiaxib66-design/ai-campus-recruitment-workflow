@@ -25,6 +25,7 @@ Read `references/guided-workflow.md` for full-loop runs, user tests, first-time 
 - After reading a resume, form tentative direction hypotheses and ask one or two adaptive follow-up rounds. Do not replace the conversation with a fixed questionnaire or decide preferences for the user.
 - Route target discovery by what the user knows: named companies, a role/industry/region direction, or no clear target. Search for companies when the user provides constraints but no names.
 - After verifying a small shortlist of suitable roles, open their official role pages in the Codex browser when that capability is available. Let the user review the real pages and state which roles they prefer before final prioritization; otherwise provide clickable official links.
+- Act before handing work back: for an authorized recruitment task, use available tools to complete every safe, reversible step within scope, including navigation, ordinary clicks, page inspection, and entry of user-confirmed facts. Do not ask the user to perform a step merely because manual instructions are easier. Hand off only human checkpoints, missing facts, or a precisely reported tool limitation, and request the smallest necessary user action.
 - Guide one useful next action at a time. Use explicit stage labels only when they improve clarity; avoid repeating privacy or process boilerplate after the boundary is settled.
 - Pause at every human checkpoint. Missing evidence remains unresolved; it is not permission to proceed by assumption.
 - Enter **improvement mode** only when the user explicitly asks to record a workflow problem, change the Skill, or publish a new version. Obtain approval for the specific change before editing, then return to the interrupted recruitment step.
@@ -64,8 +65,9 @@ Read `references/scoring.md` when changing weights, thresholds, or competition e
 1. Compare each JD requirement with explicit resume evidence. Separate `strong evidence`, `partial evidence`, `gap`, and `needs user confirmation`.
 2. Suggest truthful resume wording. Never fabricate skills, dates, metrics, employers, projects, awards, or credentials.
 3. Draft open-question answers from verified facts and the JD. Highlight placeholders and claims requiring user verification.
-4. Reuse repeated fields only from the user's private configuration. Show a final review checklist before form entry.
-5. Stop before final submission. Browser login, CAPTCHA, legal attestations, consent, and submit remain manual.
+4. Reuse repeated fields only from the user's private configuration. After the user authorizes work on a specific application and completes any required login, use available browser tools to inspect and populate reversible form fields from confirmed facts. Navigate ordinary non-submitting steps when needed to expose later fields.
+5. If a browser action fails, attempt the safe available alternatives before asking the user. Never claim success without observing it; report the exact failed action and request only the minimum manual handoff.
+6. Show a final review checklist before submission. Browser login, CAPTCHA, legal attestations, consent, and final submit remain manual.
 
 ## Track applications
 
