@@ -13,8 +13,8 @@
 | Skill 安装与自然语言触发 | 已验证 | 支持完整流程，也可只运行线索、评分、材料或追踪阶段 |
 | 私有配置初始化 | 已验证 | 从虚构模板生成，默认不覆盖已有文件 |
 | 线索导入、岗位评分、名额排序 | 已验证 | 标准库脚本，可重复运行 |
-| 本地投递追踪 | 已验证 | 支持初始化、新增、更新、筛选和近期事项 |
-| 招聘邮件期限提取 | mock 已验证 | 提供 163 IMAP 只读接口，但未宣称完成真实邮箱联调 |
+| 本地投递追踪 | 已验证 | 支持初始化、新增、更新、筛选、近期事项和 JSONL 状态历史 |
+| 招聘邮件与状态监测 | mock 已验证 | 邮件匹配、事件去重、待确认状态候选和 72/24/3 小时提醒；未连接真实邮箱 |
 | 官网招聘信息核验 | 由 Codex 联网执行 | 第三方内容只作线索，关键事实以当次官网信息为准 |
 | 登录、验证码、最终投递 | 人工执行 | 不绕过网站规则，不自动点击最终提交 |
 | 日历写入 | 确认后使用外部日历能力 | 本仓库只生成待确认事项，不自动写入日历 |
@@ -31,8 +31,8 @@
 - 区分内置浏览器与受控浏览器会话，填写后必须向用户展示同一个已填页面；解析后主动报告空白板块、经历分类和待确认项。
 - 输出“努力争取、重点投递、相对保底、不建议占用名额”，并解释共享投递名额下的取舍。
 - 对照 JD 检查简历证据、辅助润色开放题、复用私有配置中的重复字段；不虚构经历。
-- 用本地 CSV 维护公司、岗位、批次、投递时间、截止日期、状态和后续事项。
-- 可选 163 邮箱 IMAP 只读扩展：从招聘通知中生成待确认事项；确认前不写入日历。
+- 用本地 CSV 维护投递，并以 JSONL 追加状态历史；邮件识别不能直接修改状态。
+- 可选 163 邮箱 IMAP 只读扩展：从招聘通知中生成待确认事项，通过虚构数据验证邮件匹配、去重和 72/24/3 小时提醒；确认前不改追踪表或日历。
 
 ## 安装
 
@@ -91,7 +91,7 @@ python -m unittest discover -s tests -v
 python .\scripts\check_sensitive.py --path .
 ```
 
-应看到 14 项测试通过和敏感信息扫描通过。macOS/Linux 可将路径分隔符改为 `/`，如系统使用 `python3`，请把命令中的 `python` 替换为 `python3`。
+应看到 16 项测试通过和敏感信息扫描通过。macOS/Linux 可将路径分隔符改为 `/`，如系统使用 `python3`，请把命令中的 `python` 替换为 `python3`。
 
 ### 2. 创建自己的私有配置
 
@@ -162,7 +162,7 @@ python .\skills\ai-campus-recruitment-workflow\scripts\score_roles.py `
 
 ```powershell
 python .\skills\ai-campus-recruitment-workflow\scripts\tracker.py init --file .\private\applications.csv
-python .\skills\ai-campus-recruitment-workflow\scripts\tracker.py add --file .\private\applications.csv --company "星河科技（虚构）" --role "数据产品培训生" --cycle "2027秋招"
+python .\skills\ai-campus-recruitment-workflow\scripts\tracker.py add --file .\private\applications.csv --history-file .\private\application-history.jsonl --company "星河科技（虚构）" --role "数据产品培训生" --cycle "2027秋招"
 python .\skills\ai-campus-recruitment-workflow\scripts\tracker.py due --file .\private\applications.csv --days 7
 ```
 
@@ -174,6 +174,13 @@ python .\skills\ai-campus-recruitment-workflow\scripts\tracker.py due --file .\p
 python .\skills\ai-campus-recruitment-workflow\scripts\email_imap.py mock `
   --input .\examples\mock-emails.example.json `
   --output .\output\email-todos.json
+
+python .\skills\ai-campus-recruitment-workflow\scripts\recruitment_monitor.py `
+  --tracker .\examples\applications.example.csv `
+  --email-candidates .\output\email-todos.json `
+  --state .\output\monitor-state.json `
+  --output .\output\monitor-report.json `
+  --now 2026-08-23T10:00:00+08:00
 ```
 
 真实连接 163 邮箱前，由用户在邮箱设置中启用 IMAP 并生成授权码，然后仅在当前进程环境中提供：
@@ -208,7 +215,7 @@ python .\scripts\check_sensitive.py --path .
 
 当前版本见 [`VERSION`](VERSION)，各版本变化见 [`CHANGELOG.md`](CHANGELOG.md)。
 
-工作流按 `v0.1`、`v0.2`、`v0.3`、`v0.4`、`v0.5`、`v0.6`、`v0.7` 依次迭代。每次更新遵循以下顺序：
+工作流按 `v0.1` 至当前 `v0.8` 依次迭代。每次更新遵循以下顺序：
 
 1. 根据真实测试结果说明发现的问题、拟议改动、涉及文件和预期影响。
 2. 得到用户对该项工作流改动的明确确认。

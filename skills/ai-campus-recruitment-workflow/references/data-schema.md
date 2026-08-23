@@ -13,3 +13,11 @@ Hard requirements may include `required_degree`, eligible graduation range, `req
 ## Tracker
 
 The CSV columns are controlled by `scripts/tracker.py`. Datetimes use ISO 8601. Recommended statuses are `线索`, `待投递`, `已投递`, `测评`, `笔试`, `面试`, `Offer`, `拒绝`, `撤回`, and `结束`.
+
+## Application history
+
+The optional JSONL history is append-only. Each event contains `recorded_at`, `application_id`, `event_type`, `source`, `source_id`, and field-level `changes` with `from` and `to`. Use a fictional or mailbox-derived event key as `source_id`; never place message bodies or credentials in history.
+
+## Monitor state and report
+
+The private monitor state contains processed event keys, pending status changes, sent reminder keys, and the last check time. The generated report separates `status_change_candidates`, `reminders`, and `unmatched_events`, and always declares whether a tracker write occurred. Status candidates require explicit user confirmation before `tracker.py update`.

@@ -75,12 +75,12 @@ Read `references/application-form-filling.md` before working with resume upload,
 
 ## Track applications
 
-Use `scripts/tracker.py` to initialize, add, update, list, and show due items in a local CSV tracker. Store the real tracker outside the repository or in an ignored `private/` path.
+Use `scripts/tracker.py` to initialize, add, update, list, show due items, and append a JSONL status history. Store the real tracker and history outside the repository or in an ignored `private/` path. A recruiting email is never enough to mutate status: show the candidate, obtain confirmation, run `update`, and record the email event key as `--source-id`.
 
 ```text
 python scripts/tracker.py init --file private/applications.csv
-python scripts/tracker.py add --file private/applications.csv --company "星河科技（虚构）" --role "数据产品培训生" --cycle "2027秋招" --deadline "2026-09-30T23:59:00+08:00"
-python scripts/tracker.py update --file private/applications.csv --id APP-0001 --status "笔试" --next-action "完成在线测评"
+python scripts/tracker.py add --file private/applications.csv --history-file private/application-history.jsonl --company "星河科技（虚构）" --role "数据产品培训生" --cycle "2027秋招" --deadline "2026-09-30T23:59:00+08:00"
+python scripts/tracker.py update --file private/applications.csv --history-file private/application-history.jsonl --id APP-0001 --status "笔试" --next-action "完成在线测评" --source user_confirmed --source-id <event-key>
 ```
 
 ## Extract email deadlines
@@ -88,8 +88,10 @@ python scripts/tracker.py update --file private/applications.csv --id APP-0001 -
 1. Read `references/email-extension.md` before connecting.
 2. Prefer mock files. For 163 Mail, use IMAP with an authorization code in environment variables or ignored local secrets. Never store or print it.
 3. Run `scripts/email_imap.py mock --input <messages.json> --output <todos.json>` offline, or `fetch` only after user confirmation.
-4. Treat extracted dates and event types as candidates. Show source, timezone, and confidence for review.
-5. Do not write to a calendar until the user explicitly confirms selected events.
+4. Run `scripts/recruitment_monitor.py` to match candidates to the private tracker, deduplicate events, and generate 72h/24h/3h reminders. It must report `tracker_write_performed: false`.
+5. Treat extracted dates, event types, and suggested statuses as candidates. Show source, timezone, match confidence, and current versus suggested status for review.
+6. Update the tracker only after explicit confirmation. Then pass the confirmed event key back to the monitor so it leaves the pending queue.
+7. Do not write to a calendar until the user explicitly confirms selected events.
 
 ## Finish each run
 

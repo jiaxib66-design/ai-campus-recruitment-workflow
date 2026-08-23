@@ -34,6 +34,14 @@ def write_rows(path: Path, rows: list[dict]) -> None:
         writer.writerows({field: row.get(field, "") for field in FIELDS} for row in rows)
 
 
+def append_history(path: Path | None, event: dict) -> None:
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+
 def next_id(rows: list[dict]) -> str:
     numbers = []
     for row in rows:
@@ -56,6 +64,17 @@ def add_command(args) -> dict:
     })
     rows.append(row)
     write_rows(path, rows)
+    append_history(
+        Path(args.history_file) if args.history_file else None,
+        {
+            "recorded_at": row["updated_at"],
+            "application_id": row["id"],
+            "event_type": "application_created",
+            "source": args.source,
+            "source_id": args.source_id,
+            "changes": {"status": {"from": None, "to": row["status"]}},
+        },
+    )
     return row
 
 
@@ -80,12 +99,22 @@ def main() -> int:
     for name in ["cycle", "location", "applied-at", "deadline", "next-action", "next-action-at", "official-url", "notes"]:
         add.add_argument(f"--{name}", default="")
     add.add_argument("--status", default="待投递")
+    add.add_argument("--history-file")
+    add.add_argument("--source", default="user_confirmed")
+    add.add_argument("--source-id", default="")
 
     update = sub.add_parser("update")
     update.add_argument("--file", required=True)
     update.add_argument("--id", required=True)
     for name in ["status", "applied-at", "deadline", "next-action", "next-action-at", "notes"]:
         update.add_argument(f"--{name}")
+    update.add_argument("--history-file")
+    update.add_argument("--source", default="user_confirmed")
+    update.add_argument("--source-id", default="")
+
+    history = sub.add_parser("history")
+    history.add_argument("--file", required=True)
+    history.add_argument("--id")
 
     listing = sub.add_parser("list")
     listing.add_argument("--file", required=True)
@@ -108,18 +137,44 @@ def main() -> int:
         print(json.dumps(add_command(args), ensure_ascii=False, indent=2))
         return 0
 
+    if args.command == "history":
+        events = []
+        if path.exists():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    event = json.loads(line)
+                    if not args.id or event.get("application_id") == args.id:
+                        events.append(event)
+        print(json.dumps(events, ensure_ascii=False, indent=2))
+        return 0
+
     rows = read_rows(path)
     if args.command == "update":
         changed = False
         for row in rows:
             if row["id"] == args.id:
+                changes = {}
                 for field in ["status", "applied_at", "deadline", "next_action", "next_action_at", "notes"]:
                     value = getattr(args, field)
-                    if value is not None:
+                    if value is not None and value != row[field]:
+                        changes[field] = {"from": row[field], "to": value}
                         row[field] = value
-                row["updated_at"] = now_iso()
+                if changes:
+                    row["updated_at"] = now_iso()
                 changed = True
                 print(json.dumps(row, ensure_ascii=False, indent=2))
+                if changes:
+                    append_history(
+                        Path(args.history_file) if args.history_file else None,
+                        {
+                            "recorded_at": row["updated_at"],
+                            "application_id": row["id"],
+                            "event_type": "status_changed" if "status" in changes else "application_updated",
+                            "source": args.source,
+                            "source_id": args.source_id,
+                            "changes": changes,
+                        },
+                    )
                 break
         if not changed:
             parser.error(f"Application id not found: {args.id}")

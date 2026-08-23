@@ -29,6 +29,7 @@ def load_module(name: str, path: Path):
 
 score_roles = load_module("score_roles", SKILL_SCRIPTS / "score_roles.py")
 email_imap = load_module("email_imap", SKILL_SCRIPTS / "email_imap.py")
+recruitment_monitor = load_module("recruitment_monitor", SKILL_SCRIPTS / "recruitment_monitor.py")
 
 
 class ScoringTests(unittest.TestCase):
@@ -59,9 +60,57 @@ class EmailTests(unittest.TestCase):
     def test_mock_deadline_extraction_requires_confirmation(self):
         data = json.loads((ROOT / "examples" / "mock-emails.example.json").read_text(encoding="utf-8"))
         candidates = email_imap.extract_candidates(data["messages"])
-        self.assertEqual(len(candidates), 2)
+        self.assertEqual(len(candidates), 3)
         self.assertTrue(all(item["requires_user_confirmation"] for item in candidates))
-        self.assertTrue(all(item["timezone"] == "Asia/Shanghai" for item in candidates))
+        self.assertTrue(all(item["timezone"] == "Asia/Shanghai" for item in candidates[:2]))
+        self.assertEqual(candidates[2]["event_type"], "offer")
+        self.assertEqual(candidates[2]["deadline"], "")
+        self.assertEqual(candidates[0]["sender"], "campus@example.org")
+
+
+class MonitoringTests(unittest.TestCase):
+    def test_match_status_candidate_and_keep_tracker_read_only(self):
+        rows = [{
+            "id": "APP-0001", "company": "星河科技（虚构）", "role": "数据产品培训生",
+            "status": "已投递", "deadline": "", "next_action": "", "next_action_at": "",
+        }]
+        candidates = [{
+            "message_id": "fictional-001", "event_type": "assessment", "deadline": "",
+            "subject": "星河科技 数据产品培训生在线测评", "sender": "campus@example.org",
+        }]
+        state = {"processed_event_keys": [], "pending_status_changes": {}, "sent_reminder_keys": []}
+        report = recruitment_monitor.build_report(
+            rows, candidates, state, recruitment_monitor.parse_time("2026-08-23T10:00:00+08:00"), [3, 24, 72]
+        )
+        self.assertFalse(report["tracker_write_performed"])
+        self.assertEqual(report["status_change_candidates"][0]["suggested_status"], "测评")
+        self.assertTrue(report["status_change_candidates"][0]["requires_user_confirmation"])
+        self.assertEqual(rows[0]["status"], "已投递")
+
+        repeated = recruitment_monitor.build_report(
+            rows, candidates, state, recruitment_monitor.parse_time("2026-08-23T10:05:00+08:00"), [3, 24, 72]
+        )
+        self.assertEqual(len(repeated["status_change_candidates"]), 1)
+
+    def test_reminder_tiers_are_deduplicated(self):
+        rows = [{
+            "id": "APP-0002", "company": "远山智能（虚构）", "role": "产品培训生",
+            "status": "测评", "deadline": "", "next_action": "完成在线测评",
+            "next_action_at": "2026-08-26T10:00:00+08:00",
+        }]
+        state = {"processed_event_keys": [], "pending_status_changes": {}, "sent_reminder_keys": []}
+        first = recruitment_monitor.build_report(
+            rows, [], state, recruitment_monitor.parse_time("2026-08-23T11:00:00+08:00"), [3, 24, 72]
+        )
+        self.assertEqual(first["reminders"][0]["tier_hours"], 72)
+        second = recruitment_monitor.build_report(
+            rows, [], state, recruitment_monitor.parse_time("2026-08-23T12:00:00+08:00"), [3, 24, 72]
+        )
+        self.assertEqual(second["reminders"], [])
+        third = recruitment_monitor.build_report(
+            rows, [], state, recruitment_monitor.parse_time("2026-08-25T11:00:00+08:00"), [3, 24, 72]
+        )
+        self.assertEqual(third["reminders"][0]["tier_hours"], 24)
 
 
 class CliTests(unittest.TestCase):
@@ -91,15 +140,21 @@ class CliTests(unittest.TestCase):
             self.run_cli("tracker.py", "init", "--file", str(tracker))
             self.run_cli(
                 "tracker.py", "add", "--file", str(tracker), "--company", "星河科技（虚构）",
-                "--role", "数据产品培训生", "--deadline", "2026-09-01T12:00:00+00:00"
+                "--role", "数据产品培训生", "--deadline", "2026-09-01T12:00:00+00:00",
+                "--history-file", str(temp_path / "history.jsonl")
             )
             self.run_cli(
                 "tracker.py", "update", "--file", str(tracker), "--id", "APP-0001",
-                "--status", "已投递", "--next-action", "等待通知"
+                "--status", "已投递", "--next-action", "等待通知",
+                "--history-file", str(temp_path / "history.jsonl"), "--source", "user_confirmed",
+                "--source-id", "fictional-confirmation-001"
             )
             with tracker.open(encoding="utf-8-sig", newline="") as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(rows[0]["status"], "已投递")
+            history = [json.loads(line) for line in (temp_path / "history.jsonl").read_text(encoding="utf-8").splitlines()]
+            self.assertEqual([item["event_type"] for item in history], ["application_created", "status_changed"])
+            self.assertEqual(history[1]["source_id"], "fictional-confirmation-001")
 
             todos = temp_path / "todos.json"
             result = self.run_cli(

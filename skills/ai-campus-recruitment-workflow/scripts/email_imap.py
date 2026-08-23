@@ -15,8 +15,10 @@ from pathlib import Path
 
 EVENT_WORDS = {
     "测评": "assessment", "笔试": "written_test", "面试": "interview",
-    "材料": "materials", "assessment": "assessment", "interview": "interview",
-    "written test": "written_test", "deadline": "deadline",
+    "材料": "materials", "录用": "offer", "offer": "offer",
+    "遗憾": "rejection", "未通过": "rejection", "拒绝": "rejection",
+    "assessment": "assessment", "interview": "interview",
+    "written test": "written_test", "deadline": "deadline", "rejected": "rejection",
 }
 DATE_PATTERNS = [
     re.compile(r"(?P<date>20\d{2}-\d{1,2}-\d{1,2})[ T](?P<time>\d{1,2}:\d{2})(?:\s*(?P<tz>北京时间|UTC\+?8|CST))?", re.I),
@@ -61,8 +63,10 @@ def extract_candidates(messages: list[dict]) -> list[dict]:
         body = str(message.get("body", ""))
         text = f"{subject}\n{body}"
         event = next((kind for word, kind in EVENT_WORDS.items() if word.casefold() in text.casefold()), "recruiting_event")
+        matched_date = False
         for pattern in DATE_PATTERNS:
             for match in pattern.finditer(text):
+                matched_date = True
                 deadline, timezone_name = normalize_date(match.group("date"), match.groupdict().get("time"), match.groupdict().get("tz"))
                 output.append({
                     "event_type": event,
@@ -70,10 +74,23 @@ def extract_candidates(messages: list[dict]) -> list[dict]:
                     "timezone": timezone_name,
                     "confidence": "medium" if timezone_name == "unknown" else "high",
                     "subject": subject,
+                    "sender": str(message.get("sender", "")),
                     "message_id": str(message.get("message_id", "")),
                     "source_excerpt": match.group(0),
                     "requires_user_confirmation": True,
                 })
+        if not matched_date and event != "recruiting_event":
+            output.append({
+                "event_type": event,
+                "deadline": "",
+                "timezone": "unknown",
+                "confidence": "medium",
+                "subject": subject,
+                "sender": str(message.get("sender", "")),
+                "message_id": str(message.get("message_id", "")),
+                "source_excerpt": subject,
+                "requires_user_confirmation": True,
+            })
     return output
 
 
@@ -98,7 +115,12 @@ def fetch_messages(since_days: int, limit: int) -> list[dict]:
             if status != "OK" or not payload or not isinstance(payload[0], tuple):
                 continue
             parsed = email.message_from_bytes(payload[0][1])
-            messages.append({"message_id": decode_value(parsed.get("Message-ID")), "subject": decode_value(parsed.get("Subject")), "body": body_text(parsed)})
+            messages.append({
+                "message_id": decode_value(parsed.get("Message-ID")),
+                "subject": decode_value(parsed.get("Subject")),
+                "sender": decode_value(parsed.get("From")),
+                "body": body_text(parsed),
+            })
         client.logout()
     return messages
 
