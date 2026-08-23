@@ -171,6 +171,38 @@ class GuidedWorkflowContractTests(unittest.TestCase):
         self.assertIn("read `application-form-filling.md`", guided_workflow)
         self.assertIn("check for resume upload and automatic parsing", guided_workflow)
 
+    def test_confirmed_context_and_campus_only_scope_persist(self):
+        guide = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("Carry user-confirmed context forward", guide)
+        self.assertIn("campus-only requirement", guide)
+        self.assertIn("exclude social recruitment and ordinary internship projects", guide)
+        self.assertIn("reuse the confirmed role direction and constraints", guide)
+        self.assertIn("Do not restart discovery", guide)
+
+    def test_visible_browser_session_and_experience_classification_contract(self):
+        guide = APPLICATION_FORM_GUIDE.read_text(encoding="utf-8")
+        required_contracts = (
+            "different sessions even when they show the same URL",
+            "Selecting a background tab or opening an empty duplicate is not sufficient",
+            "exact populated tab or window",
+            "which sections are populated, which contain parsing errors, and which remain blank",
+            "internships belong under internship experience",
+            "password-bearing, access-code, private-share",
+            "Do not equate a complete form with a strong role match",
+        )
+        for contract in required_contracts:
+            with self.subTest(contract=contract):
+                self.assertIn(contract, guide)
+
+    def test_successful_submission_respects_storage_boundary(self):
+        guide = GUIDED_WORKFLOW.read_text(encoding="utf-8")
+        close_stage = guide.split("### 9. Close and improve", 1)[1].split(
+            "## Change-control checkpoint", 1
+        )[0]
+        self.assertIn("reports successful submission", close_stage)
+        self.assertIn("only if the user previously allowed persistence", close_stage)
+        self.assertIn("conversation-only", close_stage)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,6 +8,14 @@ Read this reference when a real campus application involves resume upload, autom
 2. Inspect the form before changing it. Identify resume upload and parsing support, accepted file formats, required sections, pre-existing saved data, and the final submission control.
 3. Prefer upload-and-parse when the employer supports it. Do not start manual field-by-field entry until the upload path and any existing parsed data have been checked.
 
+## Keep one visible browser session
+
+1. Identify the browser surface and tab that Codex can actually control. Treat a controlled browser, a separate desktop browser, and an in-app browser as different sessions even when they show the same URL.
+2. Before entering data, observe the login indicator and current form state in the controllable session. Do not assume that a login, upload, or draft from another surface is shared.
+3. “Open the page” means make the exact relevant page visible to the user. Selecting a background tab or opening an empty duplicate is not sufficient.
+4. After entering data, observe the values in that same session and bring the exact populated tab or window to the foreground when the interface supports it.
+5. If Codex cannot both control and expose the same session, state the mismatch precisely. Never tell the user that the page they are viewing was populated when only a separate session contains the changes.
+
 ## Handle the resume upload
 
 1. Explain that uploading sends the resume to the named employer, and obtain explicit authorization if the user has not already clearly authorized that disclosure.
@@ -17,11 +25,18 @@ Read this reference when a real campus application involves resume upload, autom
 
 ## Reconcile parsed content
 
-1. Wait for parsing to finish, then inspect every populated section, including contact information, education, internships, projects, skills, and application questions.
+1. Wait for parsing to finish, then inspect every visible section, including contact information, education, internships, work, projects, skills, and application questions.
 2. Compare parsed fields with explicit user-confirmed resume evidence. Treat parser output and pre-existing saved fields as unverified until checked.
-3. Correct factual parsing errors and formatting problems. Apply concise, truthful wording improvements only where the form accepts descriptive text; never invent dates, metrics, duties, credentials, or achievements.
-4. Leave unsupported or ambiguous fields unresolved and ask for the missing fact instead of inferring it.
-5. Avoid saving form snapshots, extracted personal fields, transformed resume copies, or application answers in the Skill or repository. Remove agent-created transient browser artifacts before committing when they may contain runtime data.
+3. Before requesting more information, report which sections are populated, which contain parsing errors, and which remain blank. Reuse facts the user already supplied and ask only for the missing fields needed to continue.
+4. Classify experience by its actual nature: internships belong under internship experience, while full-time or other non-internship employment belongs under work experience. Do not move an internship into work experience merely to fill an empty section, and do not mark “no work experience” without confirmed evidence.
+5. Correct factual parsing errors and formatting problems. Apply concise, truthful wording improvements only where the form accepts descriptive text; never invent dates, metrics, duties, credentials, or achievements.
+6. Leave unsupported or ambiguous fields unresolved and ask for the missing fact instead of inferring it.
+7. Treat password-bearing, access-code, private-share, or otherwise restricted project links as sensitive disclosure. Obtain explicit authorization to send the link and its access code to the named employer before entering it.
+8. Avoid saving form snapshots, extracted personal fields, transformed resume copies, or application answers in the Skill or repository. Remove agent-created transient browser artifacts before committing when they may contain runtime data.
+
+## Check role alignment
+
+Do not equate a complete form with a strong role match. Before final review, compare the populated evidence with the official JD, distinguish demonstrated strengths from missing role-specific evidence, and ask whether the user has truthful information that can close a material gap. If the evidence does not exist, keep the gap explicit and do not manufacture targeting language.
 
 ## Ask for user review
 
